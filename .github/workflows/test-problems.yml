@@ -1,0 +1,47 @@
+name: Test OBI Problems
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "problemas/**"
+      - "fundamentos/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "problemas/**"
+      - "fundamentos/**"
+
+jobs:
+  test-problems:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Test basic modules
+        run: |
+          echo "Testing basic modules..."
+          python fundamentos/estruturas-dados/arrays_basicos.py
+
+      - name: Check problem files
+        run: |
+          echo "Checking problem files..."
+          find problemas/ -name "*.py" -type f | head -5
+
+      - name: Validate Python syntax
+        run: |
+          echo "Validating Python syntax..."
+          python -m py_compile fundamentos/estruturas-dados/arrays_basicos.py
+          python -m py_compile templates/template_basico.py
+          for file in problemas/nivel1/*.py; do
+            if [ -f "$file" ]; then
+              python -m py_compile "$file"
+            fi
+          done
